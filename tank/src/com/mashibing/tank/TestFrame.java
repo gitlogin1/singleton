@@ -68,6 +68,13 @@ public class TestFrame extends Frame{
         for (int i = 0; i < tanks.size(); i++) {
             tanks.get(i).paint(graphics, testFrame);
         }
+
+        // 子弹攻击坦克 （计算子弹是否能命中坦克）
+        for (Buillter buillter : buillters) {
+            for (Tank tank : tanks) {
+                buillter.died(tank);
+            }
+        }
     }
 
     class MyKeyListener extends KeyAdapter{

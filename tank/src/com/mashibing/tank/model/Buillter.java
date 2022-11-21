@@ -21,10 +21,22 @@ public class Buillter {
 
     private boolean living = true;
 
-    public Buillter(int x, int y, Dir dir) {
+    private Group group;
+
+    Rectangle rectangle = new Rectangle();
+
+    private TestFrame testFrame;
+
+    public Buillter(int x, int y, Dir dir, Group group) {
         this.x = x;
         this.y = y;
         this.dir = dir;
+        this.group = group;
+
+        rectangle.x = this.x;
+        rectangle.y = this.y;
+        rectangle.height = ResourceMgr.buillterdImg.getHeight();
+        rectangle.width = ResourceMgr.buillterdImg.getWidth();
     }
 
     public void paint(Graphics graphics, TestFrame testFrame) {
@@ -52,6 +64,10 @@ public class Buillter {
     }
 
     private void move(TestFrame frame) {
+        if (!isLiving()) {
+            frame.buillters.remove(this);
+            return;
+        }
         switch (dir) {
             case LEFT:
                 x -= SPEED;
@@ -66,6 +82,8 @@ public class Buillter {
                 y += SPEED;
                 break;
         }
+        this.rectangle.x = x;
+        this.rectangle.y = y;
         if (x < 0 || y < 0 || x > frame.getWidth() || y > frame.getHeight()) {
             living = false;
         }
@@ -80,5 +98,19 @@ public class Buillter {
                 ", dir=" + dir +
                 ", living=" + living +
                 '}';
+    }
+
+    public void died(Tank tank) {
+        if (this.group == tank.getGroup()) {
+            return;
+        }
+        if(this.living && tank.isLiving() && this.rectangle.intersects(tank.rectangle)) {
+            tank.die();
+            this.die();
+        }
+    }
+
+    private void die() {
+        this.living = false;
     }
 }

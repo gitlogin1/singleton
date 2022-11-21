@@ -15,9 +15,20 @@ public class Tank {
     private int speed = 8;
     private boolean moving = true;
     private TestFrame testFrame;
-    private Group group = Group.BAD;
+    private Group group;
+    private boolean isLiving = true;
+
+    public boolean isLiving() {
+        return isLiving;
+    }
+
+    public void setLiving(boolean living) {
+        isLiving = living;
+    }
 
     private Random random = new Random();
+    // 坦克范围
+    Rectangle rectangle = new Rectangle();
 
 //    private List<Buillter> buillter = new ArrayList<>();
     public void setMoving(boolean moving) {
@@ -26,8 +37,17 @@ public class Tank {
     public void setDir(Dir dir) {
         this.dir = dir;
     }
+    private int id = random.nextInt();
 
-    public Tank (int x, int y ,Dir d, TestFrame testFrame, Group group){
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public Tank (int x, int y , Dir d, TestFrame testFrame, Group group){
         this.x = x;
         this.y = y;
         this.dir = d;
@@ -36,13 +56,20 @@ public class Tank {
         if (group == Group.GOOD) {
             this.moving = false;
         }
+
+        rectangle.y = this.y;
+        rectangle.x = this.x;
+        rectangle.width = ResourceMgr.tankuImg.getWidth();
+        rectangle.height = ResourceMgr.tankuImg.getHeight();
     }
 
     public void paint(Graphics graphics, TestFrame testFrame) {
+        if(!isLiving) this.testFrame.tanks.remove(this);
 //        graphics.setColor(Color.yellow);
 //        graphics.fillRect(this.x, this.y, width, height);
         switch (dir) {
             case UP:
+//                graphics.drawImage(this.group == Group.GOOD ? ResourceMgr.myTank : ResourceMgr.tankuImg, x, y, null);
                 graphics.drawImage(ResourceMgr.tankuImg, x, y, null);
                 break;
             case DOWN:
@@ -62,10 +89,11 @@ public class Tank {
     }
 
     public void fire() {
-        testFrame.buillters.add(new Buillter(this.x, this.y, this.dir));
+        testFrame.buillters.add(new Buillter(this.x, this.y, this.dir, this.group));
     }
 
     private void move() {
+
         if (!moving) {
             return;
         }
@@ -85,6 +113,8 @@ public class Tank {
             default:
                 break;
         }
+        this.rectangle.x = x;
+        this.rectangle.y = y;
         if(this.group == Group.BAD && random.nextInt(100) > 95)
             this.fire();
 
@@ -101,7 +131,6 @@ public class Tank {
     }
 
     private void randomDir() {
-
         this.dir = Dir.values()[random.nextInt(4)];
     }
 
@@ -133,6 +162,10 @@ public class Tank {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public void die() {
+        this.isLiving = false;
     }
 
     /*public List<Buillter> getBuillters() {
